@@ -22,7 +22,7 @@ csv_file = my_phrase + '.csv'
 
 def get_words(search_phrase):
     # Communitcate with the API via requests
-    api_key = '<YOUR_API_KEY>'
+    api_key = '<YOUR API KEY>'
     base_url = 'http://capitolwords.org/api/1/dates.json?'
     time_series__payload = {
         'phrase': search_phrase,
@@ -31,11 +31,14 @@ def get_words(search_phrase):
         'apikey': api_key
     }
 
-    # take the response and turn it into workable JSON
+    # Check to see if the file exists, if it does not get it.
     if path.isfile(csv_file) == False:
+
+        #Let's try to grab the info from the API
         try:
             r = requests.get(base_url, params=time_series__payload)
 
+        #Handle the various requests
         except requests.exceptions.Timeout:
             print("Request timeout.")
         except requests.exceptions.TooManyRedirects:
@@ -44,6 +47,8 @@ def get_words(search_phrase):
             print (e)
             exit(1)
         else:
+
+            #clean up the JSON
             json_string = r.text
             json_data = json.loads(json_string)
             results = json_data['results']
@@ -57,6 +62,7 @@ def get_words(search_phrase):
                             x["percentage"]])
             print (csv_file, "written, exiting")
 
+    #Exit if the file already exists
     elif path.isfile(csv_file)  == True:
         print (csv_file, "exists, exiting")
         exit(0)
