@@ -12,6 +12,8 @@ __author__ = "Marshall Humble"
 __copyright__ = "MIT License"
 
 import requests, json, csv
+from os import path
+from sys import exit
 
 # Define the Phrase we want to look for
 my_phrase = 'economy'
@@ -20,7 +22,7 @@ csv_file = my_phrase + '.csv'
 
 def get_words(search_phrase):
     # Communitcate with the API via requests
-    api_key = '<YOUR_API_KEY:https://sunlightfoundation.com/api/>'
+    api_key = '<YOUR_API_KEY>'
     base_url = 'http://capitolwords.org/api/1/dates.json?'
     time_series__payload = {
         'phrase': search_phrase,
@@ -30,18 +32,33 @@ def get_words(search_phrase):
     }
 
     # take the response and turn it into workable JSON
-    r = requests.get(base_url, params=time_series__payload)
-    json_string = r.text
-    json_data = json.loads(json_string)
-    results = json_data['results']
+    if path.isfile(csv_file) == False:
+        try:
+            r = requests.get(base_url, params=time_series__payload)
 
-    # write the data to a csv
-    f = csv.writer(open(csv_file, "wt"))
-    f.writerow(["date", "count", "tf-idf"])
-    for x in results:
-        f.writerow([x["day"],
-                    x["total"],
-                    x["percentage"]])
+        except requests.exceptions.Timeout:
+            print("Request timeout.")
+        except requests.exceptions.TooManyRedirects:
+            print("Incorrect URL, please check")
+        except requests.exceptions.RequestException as e:
+            print (e)
+            exit(1)
+        else:
+            json_string = r.text
+            json_data = json.loads(json_string)
+            results = json_data['results']
 
+            # write the data to a csv
+            f = csv.writer(open(csv_file, "wt"))
+            f.writerow(["date", "count", "tf-idf"])
+            for x in results:
+                f.writerow([x["day"],
+                            x["total"],
+                            x["percentage"]])
+            print (csv_file, "written, exiting")
+
+    elif path.isfile(csv_file)  == True:
+        print (csv_file, "exists, exiting")
+        exit(0)
 
 get_words(my_phrase)
