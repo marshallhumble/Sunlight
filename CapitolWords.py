@@ -20,7 +20,7 @@ csv_file = my_phrase + '.csv'
 
 def get_words(search_phrase):
     # Communitcate with the API via requests
-    api_key = '<YOUR API KEY>'
+    api_key = '<YOUR_API_KEY:https://sunlightfoundation.com/api/>'
     base_url = 'http://capitolwords.org/api/1/dates.json?'
     time_series__payload = {
         'phrase': search_phrase,
