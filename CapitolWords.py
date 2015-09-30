@@ -61,6 +61,7 @@ def get_words(search_phrase):
                             x["total"],
                             x["percentage"]])
             print (csv_file, "written, exiting")
+            exit(0)
 
     #Exit if the file already exists
     elif path.isfile(csv_file)  == True:
